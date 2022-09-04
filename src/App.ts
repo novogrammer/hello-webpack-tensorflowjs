@@ -80,6 +80,24 @@ export default class App{
     await this.setupDetectorAsync();
     this.setupEvents();
   }
+  drawFace(face:Face){
+    this.context2d.save();
+    this.context2d.strokeStyle="#f00";
+    this.context2d.strokeRect(face.box.xMin,face.box.yMin,face.box.width,face.box.height);
+    this.context2d.strokeStyle="#f0f";
+    this.context2d.beginPath();
+    for(let [fromIndex,toIndex] of faceMesh.FACEMESH_TESSELATION){
+      const from=face.keypoints[fromIndex];
+      const to=face.keypoints[toIndex];
+      this.context2d.moveTo(from.x,from.y);
+      this.context2d.lineTo(to.x,to.y);
+    }
+    this.context2d.stroke();
+    
+
+    
+    this.context2d.restore();
+  }
   async onTickAsync(){
     if(this.video.srcObject){
       this.canvas.width=this.video.videoWidth;
@@ -94,11 +112,7 @@ export default class App{
           flipHorizontal: false,
         });
         for(let face of faces){
-          this.context2d.save();
-          this.context2d.strokeStyle="#f0f";
-          this.context2d.strokeRect(face.box.xMin,face.box.yMin,face.box.width,face.box.height);
-          
-          this.context2d.restore();
+          this.drawFace(face);
         }
         
       }catch(error){
